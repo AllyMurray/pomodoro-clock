@@ -9,6 +9,9 @@ const circleStyle = css`
 `;
 
 const contentStyle = css`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
   left: 50%;
   position: absolute;
   top: 50%;
