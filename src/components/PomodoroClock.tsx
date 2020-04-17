@@ -5,31 +5,46 @@ import { css, jsx } from '@emotion/core';
 
 import Button from './Button';
 import ProgressRing from './ProgressRing';
-
-// let intervalId: NodeJS.Timeout | undefined;
+import TimeControl from './TimeControl';
 
 const remainingTimeStyle = css`
   font-size: 3em;
 `;
 
 export default function PomodoroClock() {
-  const defaultSessionTime = 25 * 60;
-  const defaultBreakTime = 5 * 60;
+  const defaultSessionMinutes = 25;
+  const defaultSessionSeconds = defaultSessionMinutes * 60;
+  const defaultBreakMinutes = 5;
   const sessionType = 'Session';
   const breakType = 'Break';
 
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | undefined>(
     undefined
   );
-  const [progress, setProgress] = useState(0);
-  const [sessionTime, setSessionTime] = useState(defaultSessionTime);
-  const [remainingTime, setRemainingTime] = useState(defaultSessionTime);
-  const [timeType, setTimeType] = useState(sessionType);
-  // const [breakTime, setBreakTime] = useState(5);
+  const [sessionTime, setSessionTime] = useState(defaultSessionMinutes);
+  const [breakTime, setBreakTime] = useState(defaultBreakMinutes);
+  const [timeInfo, setTimeInfo] = useState({
+    timeType: sessionType,
+    remainingSeconds: defaultSessionSeconds,
+  });
 
   const tick = () => {
-    setProgress(progress => progress + 1);
-    setRemainingTime(remainingTime => remainingTime - 1);
+    setTimeInfo(timeInfo => {
+      let newState;
+      if (timeInfo.remainingSeconds === 0) {
+        newState =
+          timeInfo.timeType === sessionType
+            ? { remainingSeconds: breakTime * 60, timeType: breakType }
+            : { remainingSeconds: sessionTime * 60, timeType: sessionType };
+      } else {
+        newState = {
+          ...timeInfo,
+          remainingSeconds: timeInfo.remainingSeconds - 1,
+        };
+      }
+
+      return newState;
+    });
   };
 
   const stop = useCallback(() => {
@@ -40,30 +55,33 @@ export default function PomodoroClock() {
   }, [intervalId]);
 
   const onPlayClick = () => {
-    setIntervalId(setInterval(tick, 1000));
+    setIntervalId(setInterval(tick, 100));
   };
 
   const onPauseClick = () => stop();
 
   const onResetClick = () => {
     stop();
-    setProgress(0);
-    setRemainingTime(defaultSessionTime);
-    setTimeType(sessionType);
+    setSessionTime(defaultSessionMinutes);
+    setBreakTime(defaultBreakMinutes);
+    setTimeInfo({
+      remainingSeconds: defaultSessionSeconds,
+      timeType: sessionType,
+    });
   };
 
   // Clean up on un-mount
   useEffect(
     () => () => {
-      console.log('Component unmount');
+      console.info('Component un-mount');
       stop();
     },
     [stop]
   );
 
   const formatTime = () => {
-    let minutes = Math.floor(remainingTime / 60);
-    let seconds = Math.floor(remainingTime % 60);
+    let minutes = Math.floor(timeInfo.remainingSeconds / 60);
+    let seconds = Math.floor(timeInfo.remainingSeconds % 60);
 
     return `${minutes < 10 ? '0' + minutes : minutes}:${
       seconds < 10 ? '0' + seconds : seconds
@@ -71,11 +89,22 @@ export default function PomodoroClock() {
   };
 
   const calculateProgress = () => {
-    return 100 - 100 / (sessionTime / remainingTime);
+    return 100 - 100 / ((sessionTime * 60) / timeInfo.remainingSeconds);
+  };
+
+  const handleSessionChange = (time: number) => {
+    setSessionTime(time);
+    setTimeInfo({ ...timeInfo, remainingSeconds: time * 60 });
   };
 
   return (
     <div>
+      <TimeControl
+        type="Session"
+        time={sessionTime}
+        setTime={handleSessionChange}
+      />
+      <TimeControl type="Break" time={breakTime} setTime={setBreakTime} />
       <ProgressRing
         radius={200}
         stroke={15}
@@ -84,16 +113,25 @@ export default function PomodoroClock() {
         foreGroundColor="#42A5F5"
       >
         <Fragment>
-          <span>{sessionType}</span>
-          <span css={remainingTimeStyle}>{formatTime()}</span>
+          <span id="timer-label">{timeInfo.timeType}</span>
+          <span css={remainingTimeStyle} id="time-left">
+            {formatTime()}
+          </span>
         </Fragment>
       </ProgressRing>
       {intervalId ? (
-        <Button onClick={onPauseClick}>Pause</Button>
+        <Button onClick={onPauseClick} id="start_stop">
+          Pause
+        </Button>
       ) : (
-        <Button onClick={onPlayClick}>Play</Button>
+        <Button onClick={onPlayClick} id="start_stop">
+          Play
+        </Button>
       )}
-      <Button onClick={onResetClick}>Reset</Button>
+      <Button onClick={onResetClick} id="reset">
+        Reset
+      </Button>
+      <audio id="beep" />
     </div>
   );
 }
