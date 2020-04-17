@@ -1,6 +1,6 @@
 /** @jsx jsx */
 
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { css, jsx } from '@emotion/core';
 
 import Button from './Button';
@@ -18,6 +18,7 @@ export default function PomodoroClock() {
   const sessionType = 'Session';
   const breakType = 'Break';
 
+  const audioElement = useRef<HTMLAudioElement>(null);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | undefined>(
     undefined
   );
@@ -32,6 +33,7 @@ export default function PomodoroClock() {
     setTimeInfo(timeInfo => {
       let newState;
       if (timeInfo.remainingSeconds === 0) {
+        audioElement.current?.play();
         newState =
           timeInfo.timeType === sessionType
             ? { remainingSeconds: breakTime * 60, timeType: breakType }
@@ -48,6 +50,10 @@ export default function PomodoroClock() {
   };
 
   const stop = useCallback(() => {
+    if (audioElement.current) {
+      audioElement.current.pause();
+      audioElement.current.currentTime = 0;
+    }
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(undefined);
@@ -131,7 +137,13 @@ export default function PomodoroClock() {
       <Button onClick={onResetClick} id="reset">
         Reset
       </Button>
-      <audio id="beep" />
+      {/* TODO: Use my own audio clip */}
+      <audio
+        id="beep"
+        src="https://goo.gl/65cBl1"
+        preload="auto"
+        ref={audioElement}
+      />
     </div>
   );
 }
