@@ -7,6 +7,10 @@ import Button from './Button';
 import ProgressRing from './ProgressRing';
 import TimeControl from './TimeControl';
 
+const timeControlStyle = css`
+  display: flex;
+`;
+
 const remainingTimeStyle = css`
   font-size: 3em;
 `;
@@ -105,12 +109,14 @@ export default function PomodoroClock() {
 
   return (
     <div>
-      <TimeControl
-        type="Session"
-        time={sessionTime}
-        setTime={handleSessionChange}
-      />
-      <TimeControl type="Break" time={breakTime} setTime={setBreakTime} />
+      <div css={timeControlStyle}>
+        <TimeControl
+          type="Session"
+          time={sessionTime}
+          setTime={handleSessionChange}
+        />
+        <TimeControl type="Break" time={breakTime} setTime={setBreakTime} />
+      </div>
       <ProgressRing
         radius={200}
         stroke={15}
