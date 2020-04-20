@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import Button from './Button';
+import IconButton from './IconButton';
 
 export interface ITimeControlProps {
   type: string;
@@ -24,19 +24,21 @@ export default function TimeControl(props: ITimeControlProps) {
         id={`${props.type.toLowerCase()}-label`}
       >{`${props.type} Time`}</span>
       <div>
-        <Button
+        <IconButton
+          icon="arrow-down"
           onClick={onDecrementClick}
           id={`${props.type.toLowerCase()}-decrement`}
         >
           Decrement
-        </Button>
+        </IconButton>
         <span id={`${props.type.toLowerCase()}-length`}>{props.time}</span>
-        <Button
+        <IconButton
+          icon="arrow-up"
           onClick={onIncrementClick}
           id={`${props.type.toLowerCase()}-increment`}
         >
           Increment
-        </Button>
+        </IconButton>
       </div>
     </>
   );

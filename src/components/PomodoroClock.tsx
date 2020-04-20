@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { css, jsx } from '@emotion/core';
 
-import Button from './Button';
+import IconButton from './IconButton';
 import ProgressRing from './ProgressRing';
 import TimeControl from './TimeControl';
 
@@ -132,17 +132,17 @@ export default function PomodoroClock() {
         </Fragment>
       </ProgressRing>
       {intervalId ? (
-        <Button onClick={onPauseClick} id="start_stop">
+        <IconButton icon="pause" onClick={onPauseClick} id="start_stop">
           Pause
-        </Button>
+        </IconButton>
       ) : (
-        <Button onClick={onPlayClick} id="start_stop">
+        <IconButton icon="play" onClick={onPlayClick} id="start_stop">
           Play
-        </Button>
+        </IconButton>
       )}
-      <Button onClick={onResetClick} id="reset">
+      <IconButton icon="sync" onClick={onResetClick} id="reset">
         Reset
-      </Button>
+      </IconButton>
       {/* TODO: Use my own audio clip */}
       <audio
         id="beep"
