@@ -7,8 +7,16 @@ import IconButton from './IconButton';
 import ProgressRing from './ProgressRing';
 import TimeControl from './TimeControl';
 
+const titleStyle = css`
+  align-items: center;
+  display: flex;
+  font-size: 1em;
+  justify-content: center;
+`;
+
 const timeControlStyle = css`
   display: flex;
+  justify-content: space-between;
 `;
 
 const remainingTimeStyle = css`
@@ -109,6 +117,10 @@ export default function PomodoroClock() {
 
   return (
     <div>
+      <div css={titleStyle}>
+        <i className={`fas fa-stopwatch`}></i>
+        <h1>Pomodoro Clock</h1>
+      </div>
       <div css={timeControlStyle}>
         <TimeControl
           type="Session"

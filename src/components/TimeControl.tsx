@@ -1,6 +1,14 @@
-import * as React from 'react';
+/** @jsx jsx */
+
+import { css, jsx } from '@emotion/core';
 
 import IconButton from './IconButton';
+
+const timeControlStyle = css`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+`;
 
 export interface ITimeControlProps {
   type: string;
@@ -19,7 +27,7 @@ export default function TimeControl(props: ITimeControlProps) {
   };
 
   return (
-    <>
+    <div css={timeControlStyle}>
       <span
         id={`${props.type.toLowerCase()}-label`}
       >{`${props.type} Time`}</span>
@@ -40,6 +48,6 @@ export default function TimeControl(props: ITimeControlProps) {
           Increment
         </IconButton>
       </div>
-    </>
+    </div>
   );
 }
